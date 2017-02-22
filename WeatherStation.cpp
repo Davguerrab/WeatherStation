@@ -51,7 +51,7 @@ mraa::Gpio* gpioPowerRH;
 //upm::TSL2561* digLight;
 //upm::MPL3115A2* batSensor; //barometric
 //---------------------------------------------------------------------------------
-/*
+
 void setupBarometric()                                                       
 {   
     //One Sensor for:Barometric pressure, altiude, temperature                                                                          
@@ -75,7 +75,7 @@ int getTemperature()
     float temperature = 0.0;                                                 
     temperature = batSensor->getTemperature(true);                              
     return (int)temperature;                                                      
-} */
+} 
 void setupFreeboard()
 {
 	freeBoard = new Freeboard();
@@ -89,7 +89,7 @@ int getLuxDigitalLight()
 	int lux =0;
 	lux = digLight->getLux();
 	return lux;
-}
+}*/
 int setupHumiditySensor()
 {
    slope = 0.0062 * V_SUPPLY;                           
@@ -121,7 +121,7 @@ float getSensorRH()
 float getTrueRH(float temperature)
 {     
   return getSensorRH() / (1.0546 - (0.00216 * temperature));
-}*/
+}
 void anemometerEvent(void * args)
 {
     anemometerTotal++;
@@ -186,13 +186,13 @@ int setupADC()
     adc = new ads1015(adc_i2c, 0x48);
     adc->setRange(_6_144V);
     return MRAA_SUCCESS;	
-}/*
+}
 
 float getHumidity()
 {
 	float humidity = adc->getResult(1);
 }
-*/
+
 string getWindDirection(map<string,string> &dweet_data) 
 {
 	adc_float = adc->getResult(0);
@@ -253,7 +253,7 @@ int main()
 	initAWS_Wrapper();
 	setupFreeboard();
 	setupADC();
-	//setupHumiditySensor();
+	setupHumiditySensor();
     //setupDigitalLight();
 	//setupBarometric(); 
 	setupAnemometer();
@@ -272,18 +272,18 @@ int main()
 			dweet_data["WINDSPEED_KM"] = to_string((anemometerTotal/Time)*WIND_SPEED_KM_H);
 			dweet_data["RAIN_LVL_MM"] = to_string((raingaugeTotal/Time)*RAIN_MM);
 			dweet_data["RAIN_LVL_INCH"] = to_string((raingaugeTotal/Time)*RAIN_INCHES);
-			//dweet_data["RH"] = to_string(getSensorRH());			
+			dweet_data["RH"] = to_string(getSensorRH());			
 			//dweet_data["LUX"] = to_string(getLuxDigitalLight());
-			//dweet_data["PRESSURE"] = to_string(getPressure());
-			//dweet_data["ALTITUDE"] = to_string(getAltitude());
-			//dweet_data["TEMPERATURE"] = to_string(getTemperature()); 
+			dweet_data["PRESSURE"] = to_string(getPressure());
+			dweet_data["ALTITUDE"] = to_string(getAltitude());
+			dweet_data["TEMPERATURE"] = to_string(getTemperature()); 
 			
 			//============================================================================
-			//sensor_data["RH"] = atof(dweet_data["RH"].c_str());
+			sensor_data["RH"] = atof(dweet_data["RH"].c_str());
 			sensor_data["WINDSPEED_MPH"] = (anemometerTotal/Time)*WIND_SPEED_MPH;
 			sensor_data["WINDSPEED_KM"] = (anemometerTotal/Time)*WIND_SPEED_KM_H;
 			sensor_data["RAIN_LVL_MM"] = (raingaugeTotal/Time)*RAIN_MM;
-			//sensor_data["RH"] = getSensorRH();
+			sensor_data["RH"] = getSensorRH();
 			//sensor_data["LUX"] = getLuxDigitalLight();
 			//============================================================================
 
@@ -299,22 +299,22 @@ int main()
 			cout<<"Wind speed: "<< dweet_data["WINDSPEED_KM"]<<" Kmh"<<endl;
 			cout<<"Rainfall mm/min: "<< dweet_data["RAIN_LVL_MM"]<<endl;
 			cout<<"Rainfall mm/inch: "<< dweet_data["RAIN_LVL_INCH"]<<endl;
-			//cout<<"Relative Humidity: "<< dweet_data["RH"]<<" %"<<endl;
+			cout<<"Relative Humidity: "<< dweet_data["RH"]<<" %"<<endl;
 			//cout<<"LUX: "<< dweet_data["LUX"]<<endl;
-			//cout<<"Pressure mb: "<< dweet_data["PRESSURE"]<<endl;
-			//cout<<"Altitude M: "<< dweet_data["ALTITUDE"]<<endl;
-			//cout<<"Temperature C: "<< dweet_data["TEMPERATURE"]<<endl		    
+			cout<<"Pressure mb: "<< dweet_data["PRESSURE"]<<endl;
+			cout<<"Altitude M: "<< dweet_data["ALTITUDE"]<<endl;
+			cout<<"Temperature C: "<< dweet_data["TEMPERATURE"]<<endl		    
 	
 			//AWS WRAPPER================================================================
-			awsSensorData[HUMIDITY].pData = &sensor_data["RH"]; //&temperature;
-			awsSensorData[LUX].pData = &sensor_data["LUX"]; 
-			awsSensorData[WSPEED_MPH].pData = &sensor_data["WINDSPEED_MPH"]; 
-			awsSensorData[WSPEED_KM].pData = &sensor_data["WINDSPEED_KM"];			
+			//awsSensorData[HUMIDITY].pData = &sensor_data["RH"]; //&temperature;
+			//awsSensorData[LUX].pData = &sensor_data["LUX"]; 
+			//awsSensorData[WSPEED_MPH].pData = &sensor_data["WINDSPEED_MPH"]; 
+			//awsSensorData[WSPEED_KM].pData = &sensor_data["WINDSPEED_KM"];			
 			//sendData();			
 			//===========================================================================
 			
-			anemometerTotal = 0;
-			raingaugeTotal = 0.0;
+			//anemometerTotal = 0;
+			//raingaugeTotal = 0.0;
 			Time = 0;
 
 			//FREEBOARD==================================================================
