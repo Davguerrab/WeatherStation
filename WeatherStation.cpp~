@@ -3,14 +3,12 @@
 #include <iostream>
 #include <unistd.h>
 #include "SparkFunADS1015.h"
-//#include "tsl2561.h"
-//#include "mpl3115a2.h"
+#include "tsl2561.h"
+#include "mpl3115a2.h"
 #include <cmath>
 #include <string.h>
 #include "Freeboard.h"
 #include "aws_wstation.h"
-//#include "Adafruit_MPL3115A2.h"
-#include "mpl3115a2.hpp"
 
 using namespace std;
 #define DWEET_URL "https://dweet.io/dweet/for/WZPN1"
@@ -49,9 +47,8 @@ ads1015 *adc;
 mraa::Gpio* gpioAnemometer;
 mraa::Gpio* gpioRainGauge;
 mraa::Gpio* gpioPowerRH;
-//upm::TSL2561* digLight;
+upm::TSL2561* digLight;
 upm::MPL3115A2* batSensor; //barometric
-//Adafruit_MPL3115A2 batSensor = Adafruit_MPL3115A2();
 //---------------------------------------------------------------------------------
 
 void setupBarometric()                                                       
@@ -82,7 +79,6 @@ void setupFreeboard()
 {
 	freeBoard = new Freeboard();
 }
-/*
 void setupDigitalLight()                                           
 {                                                                         
 	digLight= new upm::TSL2561(EDISON_I2C_BUS,DLS_ADDRESS,0x00,0x00);
@@ -93,7 +89,6 @@ int getLuxDigitalLight()
 	lux = digLight->getLux();
 	return lux;
 }
-*/
 int setupHumiditySensor()
 {
    slope = 0.0062 * V_SUPPLY;                           
@@ -252,15 +247,15 @@ int main()
 	setupFreeboard();
 	setupADC();
 	setupHumiditySensor();
-    //    setupDigitalLight();
+        setupDigitalLight();
 	setupBarometric(); 
-	setupAnemometer();
-	setupRainGauge();
+	//setupAnemometer();
+	//setupRainGauge();
 	for(;;)
 	{		
         
-		getWindDirection(dweet_data);
-                cout<<"Wind direction: "<< dweet_data["WDIRECTION_NAME"]<<endl;
+		//getWindDirection(dweet_data);
+                //cout<<"Wind direction: "<< dweet_data["WDIRECTION_NAME"]<<endl;
 		if(Time > REFRESH_TIME_SECS)
 		{
 			//getWindDirection(dweet_data);
@@ -269,7 +264,7 @@ int main()
 			dweet_data["RAIN_LVL_MM"] = to_string((raingaugeTotal/Time)*RAIN_MM);
 			dweet_data["RAIN_LVL_INCH"] = to_string((raingaugeTotal/Time)*RAIN_INCHES);
 			dweet_data["RH"] = to_string(getSensorRH());			
-			//dweet_data["LUX"] = to_string(getLuxDigitalLight());
+			dweet_data["LUX"] = to_string(getLuxDigitalLight());
 			dweet_data["PRESSURE"] = to_string(getPressure());
 			dweet_data["ALTITUDE"] = to_string(getAltitude());
 			dweet_data["TEMPERATURE"] = to_string(getTemperature()); 
@@ -280,7 +275,7 @@ int main()
 			sensor_data["WINDSPEED_KM"] = (anemometerTotal/Time)*WIND_SPEED_KM_H;
 			sensor_data["RAIN_LVL_MM"] = (raingaugeTotal/Time)*RAIN_MM;
 			sensor_data["RH"] = getSensorRH();
-			//sensor_data["LUX"] = getLuxDigitalLight();
+			sensor_data["LUX"] = getLuxDigitalLight();
 			//============================================================================
 
 			//PRINTING data to console====================================================
@@ -327,7 +322,7 @@ int main()
         //delete batSensor; 
 	delete gpioAnemometer;
 	delete gpioRainGauge;
-	//delete digLight;
+	delete digLight;
 	delete batSensor;        
 	delete freeBoard;
 	delete adc_i2c;

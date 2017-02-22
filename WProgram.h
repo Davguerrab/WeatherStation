@@ -5,12 +5,12 @@
 #include <string.h>
 #include <math.h>
 
-#include <avr/interrupt.h>
+//#include <avr/interrupt.h>
 
-#include "wiring.h"
+//#include "wiring.h"
 
 #ifdef __cplusplus
-#include "HardwareSerial.h"
+//#include "HardwareSerial.h"
 
 uint16_t makeWord(uint16_t w);
 uint16_t makeWord(byte h, byte l);
